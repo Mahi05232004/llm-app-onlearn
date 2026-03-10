@@ -1,0 +1,38 @@
+# Example scenario - demonstrates the expanded format.
+# This shows what a properly captured scenario looks like with full context.
+
+name: example_handback_delegation
+description: "After concept_tutor hands back with objective_complete, master should delegate to next topic"
+
+setup:
+  routing:
+    active_agent: master
+    handoff_summary: "Student successfully solved Two Sum using HashMap approach"
+    handoff_reason: objective_complete
+    expected_mode: learn
+  mode: learn
+  files:
+    /student_profile.json:
+      content: '{"language": "Python", "experience": "intermediate", "goal": "DSA for interviews"}'
+      metadata: { type: json, source: onboarding }
+    /topic.json:
+      content: '{"topic_id": "two-sum"}'
+      metadata: { type: json, source: session }
+  messages:
+    - role: assistant
+      content: "Great job! You've mastered the Two Sum concept."
+      tool_calls:
+        - name: hand_back_to_master
+          args: { summary: "Student solved Two Sum", reason: "objective_complete" }
+    - role: tool
+      content: '{"action": "hand_back_to_master", "routing": {"active_agent": null, "handoff_summary": "Student solved Two Sum", "handoff_reason": "objective_complete"}}'
+      tool_call_id: replay_hand_back_to_master
+    - role: user
+      content: "I solved it!"
+
+expect:
+  comment: "Master should see the handback, call request_plan_update, then delegate to the next topic"
+  initial_agent: master
+  has_handoff: true
+  routing_after:
+    active_agent: concept_tutor

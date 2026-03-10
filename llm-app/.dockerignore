@@ -1,0 +1,4 @@
+.venv
+onlearn
+llm-app/.venv
+# .dockerignore
