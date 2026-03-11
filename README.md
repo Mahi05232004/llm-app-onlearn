@@ -8,7 +8,7 @@ This codebase contains the AI brain of the larger **OnLearn** platform. It has b
 
 ---
 
-## 🌟 What is this Project?
+## What is this Project?
 
 Imagine a teaching platform where the AI doesn't just answer questions, but actively functions as a personalized teacher. It remembers what you struggle with, adjusts the lesson plan, teaches you concepts, and helps you debug code without giving away the answers. 
 
@@ -21,7 +21,7 @@ To achieve this, a single AI prompt is not enough. Instead, this project uses a 
 
 ---
 
-## 🏗️ Directory Structure (A Beginner's Guide)
+## Directory Structure (A Beginner's Guide)
 
 Here is a breakdown of what each folder in this repository does:
 
@@ -61,7 +61,7 @@ Because a single LLM gets easily confused if it tries to do too many things, we 
 
 ---
 
-## 🔄 How a Conversation Flows (The Architecture)
+## How a Conversation Flows (The Architecture)
 
 When a student sends a message saying *"My code isn't working"*:
 1. **API receives request**: The `api/` folder catches the HTTP request.
