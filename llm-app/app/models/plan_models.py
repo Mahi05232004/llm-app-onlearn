@@ -122,10 +122,8 @@ class PlannedTopic(BaseModel):
 
 
 class WeekPlan(BaseModel):
-    """A single week (or part of a week) in the learning plan."""
-    id: str = Field(..., description="Unique ID for this week part")
+    """A single week in the learning plan."""
     week_number: int
-    week_part: int = 1                 # 1-indexed part number for the week
     start_date: datetime
     end_date: datetime
     focus_area: str                    # set by LLM planner (e.g., "Arrays & Hashing")
@@ -222,6 +220,13 @@ class Progress(BaseModel):
         started_utc = _ensure_utc(started_at)
         target_utc = _ensure_utc(profile.target_date)
 
+        # Defensive: if target_date is before or equal to started_at
+        # (stale onboarding date), recompute from plan duration so
+        # progress metrics stay meaningful instead of showing "X days behind".
+        if target_utc <= started_utc:
+            total_weeks = plan.total_weeks or 12
+            target_utc = started_utc + timedelta(weeks=total_weeks)
+
         days_elapsed = max((now - started_utc).days, 1)
         days_remaining = max((target_utc - now).days, 0)
         weeks_elapsed = max(days_elapsed / 7, 1)
@@ -249,12 +254,7 @@ class Progress(BaseModel):
             remaining_weeks = remaining_topics / topics_per_week_actual
             estimated_completion = now + timedelta(weeks=remaining_weeks)
         else:
-            # Use the plan's actual last week end date (more accurate than
-            # the profile's target_date which may be stale/wrong year)
-            if plan.weeks:
-                estimated_completion = _ensure_utc(plan.weeks[-1].end_date)
-            else:
-                estimated_completion = target_utc
+            estimated_completion = target_utc
 
         return cls(
             total_topics=total,

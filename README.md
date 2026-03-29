@@ -1,75 +1,109 @@
-# llm-app-onlearn: Multi-Agent LLM Backend
+# OnLearn AI Engine: Multi-Agent Pedagogical Orchestration
 
-Welcome to the **llm-app-onlearn** repository! 
+Welcome to the **OnLearn AI Engine**! This repository houses the sophisticated "AI Brain" of the OnLearn platform. It is a state-of-the-art, multi-agent pedagogical system built on **LangGraph** and **DeepAgents**, specifically engineered to provide an adaptive, 1-on-1 tutoring experience for Data Structures and Algorithms (DSA) and Data Science (DS).
 
-This codebase contains the AI brain of the larger **OnLearn** platform. It has been separated from the main repository to highlight how we use **Large Language Models (LLMs)** and **Multi-Agent Orchestration** to create a highly personalized, interactive learning experience.
-
-> **Note:** The complete OnLearn codebase (including the frontend and non-AI backend services) is held in a private repository due to the complexity of the full application and the need to secure sensitive database and cloud credentials.
-
----
-
-## What is this Project?
-
-Imagine a teaching platform where the AI doesn't just answer questions, but actively functions as a personalized teacher. It remembers what you struggle with, adjusts the lesson plan, teaches you concepts, and helps you debug code without giving away the answers. 
-
-To achieve this, a single AI prompt is not enough. Instead, this project uses a **Multi-Agent System**—a team of specialized AI bots that talk to each other to guide a student through a course.
-
-### Core Technologies Used
-- **FastAPI**: The high-speed Python web framework that serves as the communication bridge between this AI engine and the frontend.
-- **LangChain & LangGraph**: The libraries that power our AI. Instead of a simple chat loop, LangGraph allows us to build complex, cyclical "graphs" where agents can think, use tools, and pass control to one another.
-- **MongoDB**: The database used to save the student's progress, store the course curriculum, and natively log the AI conversation history so the agents can "remember" past interactions.
+> [!NOTE]  
+> **Repository Scope**: This codebase specifically contains the AI logic, agent orchestration, and pedagogical backend. The complete OnLearn platform (including the UI/Frontend and auxiliary non-AI microservices) is managed in a separate repository to ensure modularity and security.
 
 ---
 
-## Directory Structure (A Beginner's Guide)
+## Architectural Vision: The Multi-Agent Faculty
 
-Here is a breakdown of what each folder in this repository does:
+OnLearn isn't just a chatbot; it's a **distributed intelligence hardware**. We solve the "context bloat" common in monolithic LLM agents by splitting pedagogical responsibilities across a team of specialized **Multi-Agent Skills**. 
 
-```text
-llm-app/
-├── api/             # The API Entrypoints (FastAPI)
-├── app/             # The Core AI Logic & Agents (LangGraph)
-├── core/            # System configurations & Database connections
-├── models/          # Data Schemas (Pydantic models)
-├── services/        # Helper functions (e.g., generating embeddings)
-└── tests/           # Testing the AI workflows
+Following the **Multi-Agent Architecture**, every student interaction flows through a structured hierarchy:
+
+### 1. The Multi-Agent Hierarchy
+*   **Planner Agent** (`app/planning/`): The curriculum architect. When a user enters the platform, the Planner asks the right questions and creates a **Global Plan** (12-week curriculum) tailored to their level.
+*   **Master Agent** (`app/tutor/dsa/agent.py`): The core orchestrator. It maintains the "Learning Journey" state, manages memory, and delegates work to specialized skills.
+*   **Session Planner skill** (`concept-tutor` / `lab-mentor` / `session-planner`): Generates the **Session To-Do List**, scoping specific tasks for the specialized tutors.
+*   **Concept Tutor Agent** (`app/tutor/core/skills/concept-tutor`): The theory professor. It uses analogies and Socratic questioning to **Teach & Guide Concepts**.
+*   **Lab Mentor Agent** (`app/tutor/core/skills/lab-mentor`): The coding coach. It has tools to **Evaluate & Debug Code** in real-time.
+*   **Progress Reporter**: Updates the student's **Progress & Results** in MongoDB, looping back to the Master Agent for the next turn.
+
+### Key Technical Pillars
+*   **Multi-Agent Orchestration**: Powered by `LangGraph` for complex, cyclical state management.
+*   **DeepAgent Framework**: A modular architecture that separates "Core Logic" (Master Agent) from "Pedagogical Skills" (Specialist Agents), allowing for rapid skill deployment.
+*   **Azure AI Inference + Kimi-k2.5**: Leveraging reasoning-focused models via Azure's enterprise-grade infrastructure.
+*   **Semantic RAG Middleware**: Automatic summarization and vector-offloading of conversation history.
+*   **Dual-Layer Memory**: 
+    *   **Short-term**: `short_term_plan.md` for session-specific tasks.
+    *   **Long-term**: `AGENTS.md` (Student Profile) and `global_plan.md` persisted via MongoDB.
+
+---
+
+## Key Highlights & Features
+
+The OnLearn AI Engine is packed with features designed for high-agency pedagogical interaction:
+
+*   **Voice-First Interaction**: Integrated with **Azure AI Speech** for real-time TTS/STT, allowing students to learn via natural conversation.
+*   **Dynamic Week-wise Planning**: A dedicated **Planner Agent** generates a fully personalized curriculum based on technical level and time commitments.
+*   **AI-Generated Daily Reports**: Automatically sends progress summaries and "streak reminders" via **Resend** to boost student retention.
+*   **Socratic Debugging**: Specialized **Lab Mentor** logic that identifies code errors but guides the student to the fix through hints rather than raw solutions.
+*   **Context-Aware Suggestions**: After every turn, the engine generates "Next Action" buttons (e.g., *"Try a similar problem"*, *"Explain this concept further"*) to keep the learning momentum.
+*   **High-Fidelity Reasoning**: Optimized for **Kimi-k2.5** with custom handling for `reasoning_content` to surface the AI's internal chain-of-thought tokens.
+*   **Secure Workspace**: A virtualized Python execution environment for running and testing student code against hidden test cases.
+
+---
+
+## 📂 Repository Deep Dive
+
+### 1. `app/` — The Intelligence Layer
+The core of the system resides here:
+
+*   **`app/tutor/`**: The primary interaction engine containing the Master Agent logic.
+    *   **`core/skills/`**: The implementation of the **Multi-Agent specialist roles** (Concept Tutor, Lab Mentor, Session Planner).
+    *   **`core/tools/`**: Domain-specific tools (e.g., `execute_code.py` sandbox, `learning_plan.py` CRUD).
+    *   **`core/middleware/`**: Intercepts messages to inject context, tag modes, or prune history.
+*   **`app/planning/`**: The **Planner Agent** logic for generating personalized 12-week paths.
+*   **`app/onboarding/`**: The interviewer agent that builds the initial student profile.
+
+### 2. `api/` — The Communication Layer
+Exposes the AI Engine to the frontend via FastAPI.
+*   **`orchestrator.py`**: The main SSE streaming endpoint handling the Master Agent's turn sequence.
+*   **`execution.py`**: Secure bridge for the Lab Mentor to run Python code.
+
+### 3. `core/` & `models/` — The Foundation
+*   **`core/mongo_db.py`**: Driver for student state, curriculum, and long-term memory.
+*   **`core/checkpointer.py`**: Persists agent history across turns.
+*   **`models/`**: Pydantic schemas for Course Concepts, Plans, and Tasks.
+
+---
+
+## 🛠 Tech Stack
+
+| Component | Technology |
+| :--- | :--- |
+| **Model Hosting** | Azure AI Inference |
+| **LLMs** | Kimi-k2.5 (Moonshot), text-embedding-3-small |
+| **Framework** | LangGraph, LangChain, DeepAgents |
+| **Backend** | FastAPI, Python 3.13+ |
+| **Database** | MongoDB (State, Store, Vectors) |
+| **Package Management** | `uv` |
+
+---
+
+## ⚙️ Setup & Configuration
+
+### Environment Variables
+Create a `.env` file based on `.env.template`:
+```env
+# Azure Credentials
+AZURE_OPENAI_API_KEY="..."
+AZURE_OPENAI_ENDPOINT="..."
+AZURE_OPENAI_API_VERSION="..."
+
+# Database
+MONGO_URI="mongodb://..."
 ```
 
-### 1. The `api/` Directory
-This folder contains the FastAPI endpoints. When the frontend wants the AI to do something, it sends a request here.
-- `main.py`: The entry point that starts the server and loads all the routes.
-- `courses.py` / `execution.py` / `validation.py`: Endpoints for fetching course data, executing the student's code securely, and validating if their code passed the required tests.
-
-### 2. The `core/` and `models/` Directories
-- **`core/`**: Handles the foundation. `mongo_db.py` manages the database connection, and `course_data.py` loads the curriculum.
-- **`models/`**: Defines the exact structure of our data using Pydantic. E.g., `concept.py` defines what a "Course Concept" looks like so the AI knows exactly what fields to expect.
-
-### 3. The `app/supervisor/` Directory (The Heart of the AI)
-This is where the magic happens. We use **LangGraph** to build a `supervisor` system that acts like a school faculty.
-
-Inside `app/supervisor/`:
-- **`orchestrator.py`**: The principal. It compiles the entire AI graph, setting up the rules for how agents talk to each other.
-- **`state/state.py`**: The memory. It defines what information is passed between agents (e.g., the current topic, the chat history, the student's code).
-
-#### The Agents (`app/supervisor/agents/`):
-Because a single LLM gets easily confused if it tries to do too many things, we split the responsibilities:
-
-1. **Master Agent**: The receptionist/manager. When a user sends a message, it always goes here first. The Master Agent decides what the user wants and forwards the message to the correct specialist.
-2. **Planner Agent**: The curriculum designer. It looks at the user's progress and updates their personalized learning plan dynamically.
-3. **Concept Tutor**: The theory professor. It uses a specific prompt to teach theoretical topics. It is instructed to guide the user to the answer, *never* just spoon-feeding it.
-4. **Lab Mentor**: The coding assistant. When the user is stuck on a coding problem, the Lab Mentor steps in. It has access to **Tools** (`app/supervisor/tools/`) like `execute.py` which allows the AI to actually run the student's code, see the error, and provide a helpful hint.
+### Quick Start
+```bash
+uv sync
+uv run python -m api.main
+```
 
 ---
 
-## How a Conversation Flows (The Architecture)
-
-When a student sends a message saying *"My code isn't working"*:
-1. **API receives request**: The `api/` folder catches the HTTP request.
-2. **Master Agent decides**: The request is pushed into the `orchestrator.py` graph. The Master Agent reads it and thinks: *"This is a coding issue. I need to route this to the Lab Mentor."*
-3. **Lab Mentor takes over**: The Lab Mentor agent receives the state. It uses the `execute` tool to run the student's code in a secure environment.
-4. **Tool returns result**: The execution tool tells the Lab Mentor: *"The code failed with a SyntaxError on line 4."*
-5. **Lab Mentor responds**: The Lab Mentor generates a friendly response: *"It looks like you missed a colon at the end of your if-statement on line 4. Try fixing that!"*
-6. **State saved**: The conversation and progress are saved securely to MongoDB via `core/checkpointer.py`.
-7. **Response sent back**: FastAPI sends the Lab Mentor's response back to the user's screen.
-
-> By breaking the system down into specific agents and giving them targeted tools (like code execution), the AI becomes incredibly accurate and helpful, simulating a real 1-on-1 tutoring experience!
+## 🛡 License & Disclaimer
+This repository is the AI Logic core of **OnLearn**. For platform access, please contact the maintainers. This is specifically the pedagogical engine and requires the OnLearn Frontend to function as intended.

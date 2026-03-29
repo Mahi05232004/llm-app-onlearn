@@ -16,7 +16,7 @@ from pydantic import BaseModel
 router = APIRouter()
 
 # Judge0 server URL - internal Docker network
-JUDGE0_URL = os.getenv("JUDGE0_URL", "http://judge0-server:2358")
+JUDGE0_URL = os.getenv("JUDGE0_URL", "http://judge0-server:2358").rstrip('/')
 
 # Language ID mapping for Judge0
 # Full list: https://github.com/judge0/judge0/blob/master/docs/api/languages.md

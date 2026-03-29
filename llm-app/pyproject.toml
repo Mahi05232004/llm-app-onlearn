@@ -37,6 +37,9 @@ dependencies = [
     "slowapi>=0.1.9",
     "pymongo>=4.6.1",
     "deepagents",
+    "langgraph-store-mongodb",
+    "langgraph-checkpoint-mongodb",
+    "google-auth>=2.48.0",
 ]
 
 

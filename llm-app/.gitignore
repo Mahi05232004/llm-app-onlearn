@@ -23,8 +23,7 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-# Virtual environments (uv creates .venv)
-.env
+# Virtual environments
 .venv/
 env/
 venv/
@@ -33,14 +32,45 @@ env.bak/
 venv.bak/
 .python-version
 
-# uv specific
+# ============================
+# 🔒 SECURITY — SENSITIVE DATA
+# ============================
 
-# Environment variables
+# Environment variables (ALL variants)
 .env
 .env.*
+.env.local
+.env.development
+.env.staging
+.env.production
+.env.dev
 !.env.example
 !.env.template
 
+# Secrets & credentials
+secrets/
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.crt
+*.cer
+**/gcp-sa*.json
+**/service-account*.json
+**/credentials*.json
+**/firebase*.json
+**/serviceAccountKey*.json
+
+# Docker secret overrides
+docker-compose.override.yml
+docker-compose.*.yml
+!docker-compose.yml
+
+# ============================
+# General Ignores
+# ============================
 
 # Jupyter Notebook
 .ipynb_checkpoints/
@@ -66,7 +96,6 @@ ipython_config.py
 *.pickle
 *.joblib
 *.model
-*.h5
 *.pb
 *.onnx
 
@@ -126,13 +155,13 @@ plots/
 config.ini
 settings.ini
 secrets.yaml
-credentials.json
 
-# Large files or directories you don't want to track
+# Large files
 data/raw/
 data/external/
 models/large/
 checkpoints/
+/data/neo4j/
 
 # Cache directories
 .cache/
@@ -140,27 +169,4 @@ checkpoints/
 .dmypy.json
 dmypy.json
 
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-/data/neo4j/
-
 onlearn
-
-secrets/
-.venv

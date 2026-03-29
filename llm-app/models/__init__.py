@@ -2,9 +2,6 @@
 Domain and state models for the LLM application.
 
 This package contains all data models representing business entities.
-
-Note: Agent state models (like OrchestratorState) are in app.supervisor.graph.state
-to avoid circular imports with repositories.
 """
 
 # Question-related models

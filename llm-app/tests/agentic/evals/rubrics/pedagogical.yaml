@@ -1,0 +1,86 @@
+# Pedagogical Quality Rubric
+# Used by the LLM judge to score tutor agent responses
+
+rubric_name: pedagogical
+version: "1.0"
+description: >
+  Evaluates whether the tutor agent follows Socratic teaching principles
+  and adheres to the pedagogical guidelines defined in its skills.
+
+# Each criterion is scored 1-5 by the judge
+criteria:
+
+  socratic_questioning:
+    weight: 3
+    description: >
+      Does the response ask guiding questions instead of giving direct answers?
+      A score of 5 means the response consistently uses questions to lead the
+      student to discover the answer. A score of 1 means it gives away the
+      solution directly.
+    examples:
+      good: "What do you think would happen if you used a hash map here?"
+      bad: "The answer is to use a hash map with O(n) time complexity."
+
+  no_direct_answer:
+    weight: 3
+    description: >
+      Does the response avoid revealing the full solution?
+      A 5 means the tutor never gives away the answer. A 1 means the tutor
+      essentially solves the problem for the student.
+
+  appropriate_length:
+    weight: 1
+    description: >
+      Is the response concise and appropriate for the UI context?
+      In code mode (side panel), responses should be short and punchy.
+      In learn mode (full chat), slightly longer explanations are acceptable.
+
+  encouraging_tone:
+    weight: 2
+    description: >
+      Does the response maintain an encouraging, supportive tone?
+      Acknowledges student effort, provides positive reinforcement,
+      and keeps motivation high even when the student makes mistakes.
+
+  correct_skill_usage:
+    weight: 2
+    description: >
+      Does the response match the expected skill behavior?
+      concept-tutor: theoretical explanation, examples, analogies
+      lab-mentor: debugging help, code-focused guidance
+      session-planner: task breakdown, progress tracking
+
+  mode_awareness:
+    weight: 2
+    description: >
+      Is the response appropriate for the current UI mode?
+      Learn mode: detailed, conceptual, uses the full chat area
+      Code mode: short, actionable, references the code editor
+
+  accuracy:
+    weight: 3
+    description: >
+      Are the technical explanations correct?
+      Algorithms, data structures, complexity analysis, and code examples
+      should be factually accurate.
+
+  context_continuity:
+    weight: 1
+    description: >
+      Does the response maintain continuity with the conversation?
+      References previous messages, builds on what was discussed,
+      and doesn't repeat information already covered.
+
+# Scoring scale
+scale:
+  1: "Poor — violates the criterion completely"
+  2: "Below average — partial violation"
+  3: "Average — meets basic expectations"
+  4: "Good — strong adherence"
+  5: "Excellent — exemplary behavior"
+
+# Overall verdict mapping
+verdict_thresholds:
+  good: 4.0          # weighted avg >= 4.0
+  needs_improvement: 2.5  # weighted avg >= 2.5
+  bad: 0             # weighted avg < 2.5

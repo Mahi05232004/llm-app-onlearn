@@ -12,7 +12,6 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
 from api.courses import router as courses_router
-from api.courses_ds import router as courses_ds_router
 from api.initialise_student import router as initialise_student_router
 from api.execution import router as execution_router
 from api.validation import router as validation_router
@@ -54,7 +53,6 @@ app.add_middleware(                     # TODO *: Add CORS middleware
 
 # Include routers
 app.include_router(courses_router, prefix="/courses", tags=["courses"])
-app.include_router(courses_ds_router, prefix="/courses-ds", tags=["courses-ds"])
 app.include_router(initialise_student_router, prefix="/kg", tags=["kg"])
 app.include_router(execution_router, prefix="/execute", tags=["execution"])
 app.include_router(validation_router, prefix="/validation", tags=["validation"])
@@ -68,11 +66,15 @@ app.include_router(chat_router, prefix="/chat", tags=["chat"])
 from app.api.endpoints.plan import router as plan_router
 app.include_router(plan_router, prefix="/plan", tags=["plan"])
 
+# Onboarding - form-based profile setup
+from app.api.endpoints.onboarding import router as onboarding_router
+app.include_router(onboarding_router, prefix="/onboarding", tags=["onboarding"])
+
 # Test/Debug endpoints (trace viewing, flagging, seed/reset)
 # Only enabled when ENABLE_TEST_ENDPOINTS=1
 import os
 if os.environ.get("ENABLE_TEST_ENDPOINTS", "0") == "1":
-    from tests.supervisor.tracing.endpoints import router as test_router
+    from tests.tracing.endpoints import router as test_router
     app.include_router(test_router, prefix="/api/test", tags=["test"])
     logging.getLogger(__name__).info("Test endpoints enabled at /api/test/")
 

@@ -47,13 +47,19 @@ async def initialise_student(request: Request):
     # Verify course data is loaded
     try:
         courses = course_loader.get_courses()
-        questions = course_loader.get_questions(course_id="dsa")
+        # Validate all active courses have questions loaded
+        total_questions = 0
+        for course in courses:
+            if course.get("isActive"):
+                cid = course.get("id", "dsa")
+                qs = course_loader.get_questions(course_id=cid)
+                total_questions += len(qs)
         
         if not courses:
             logger.error("No courses loaded")
             raise HTTPException(status_code=500, detail="Course data not loaded")
             
-        logger.info(f"Student initialised: {username}, courses available: {len(courses)}, questions: {len(questions)}")
+        logger.info(f"Student initialised: {username}, courses available: {len(courses)}, total questions: {total_questions}")
         
     except HTTPException:
         raise
@@ -72,6 +78,6 @@ async def initialise_student(request: Request):
                 "email": email
             },
             "courses_available": len(courses),
-            "total_questions": len(questions)
+            "total_questions": total_questions
         }
     )

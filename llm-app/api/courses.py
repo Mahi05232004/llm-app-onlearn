@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from core.course_data import get_sidebar_data, get_courses
 
 # Create router instance
@@ -16,11 +16,14 @@ async def courses_health():
     return {"status": "courses healthy"}
 
 @router.get("/{username}")
-async def get_courses_data(username: str):
-    """Get course structure/sidebar data."""
+async def get_courses_data(username: str, module: str = Query("dsa", description="Module/course ID (e.g. 'dsa', 'ds')")):
+    """Get course structure/sidebar data for a specific module."""
     try:
+        # Map module to course_id (they're the same for now)
+        course_id = module
+        
         # Get sidebar structure from JSON course data
-        sidebar_data = get_sidebar_data(course_id="dsa")
+        sidebar_data = get_sidebar_data(course_id=course_id)
         courses = get_courses()
         
         return {
@@ -34,3 +37,4 @@ async def get_courses_data(username: str):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+

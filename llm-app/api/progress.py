@@ -1,11 +1,11 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from core.course_data import get_questions
 
 # Create router instance
 router = APIRouter()
 
 @router.get("/{username}")
-async def get_progress(username: str, course_id: str = "dsa"):
+async def get_progress(username: str, course_id: str = Query("dsa", description="Course ID ('dsa' or 'ds')")):
     """
     Get progress data for a student.
     

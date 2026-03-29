@@ -1,0 +1,34 @@
+# ============================
+# 🔒 ROOT-LEVEL SECURITY SHIELD
+# ============================
+
+# Environment variables (ALL variants, any depth)
+.env
+.env.*
+.env.local
+.env.development
+.env.staging
+.env.production
+.env.dev
+!.env.example
+!.env.template
+
+# Secrets & credentials (any depth)
+**/secrets/
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.crt
+*.cer
+**/gcp-sa*.json
+**/service-account*.json
+**/credentials*.json
+**/firebase*.json
+**/serviceAccountKey*.json
+
+# OS files
+.DS_Store
+Thumbs.db

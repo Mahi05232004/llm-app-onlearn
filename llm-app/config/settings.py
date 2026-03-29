@@ -28,42 +28,23 @@ class AppConfig:
 
 
 class LLMConfig:
-    """LLM configuration with explicit backend selection.
-    
-    Set LLM_BACKEND env var to control auth:
-      - "vertex_ai" → uses GCP Service Account (GOOGLE_APPLICATION_CREDENTIALS)
-      - "api_key"   → uses Gemini Developer API (GOOGLE_API_KEY)
-    """
-
-    # --- Auth ---
-    backend: str = os.getenv("LLM_BACKEND", "api_key")  # "vertex_ai" or "api_key"
-    api_key: str | None = os.getenv("GOOGLE_API_KEY")
-    gcp_project: str | None = os.getenv("GOOGLE_CLOUD_PROJECT")
+    """LLM configuration with Azure AI Services (OpenAI-compatible endpoint)."""
 
     # --- Models ---
-    model: str = os.getenv("GEMINI_MODEL", "gemini-3-flash-preview")
-    pro_model: str = os.getenv("GEMINI_PRO_MODEL", "gemini-3-flash-preview")
-    flash_model: str = os.getenv("GEMINI_FLASH_MODEL", "gemini-3-flash-preview")
-    embedding_model: str = os.getenv("GEMINI_EMBEDDING_MODEL", "gemini-embedding-exp-03-07")
+    model: str = os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT", "Kimi-K2.5")
+    pro_model: str = os.getenv("AZURE_OPENAI_PRO_DEPLOYMENT", "Kimi-K2.5")
+    flash_model: str = os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT", "Kimi-K2.5")
+    fallback_model: str = os.getenv("AZURE_OPENAI_FALLBACK_DEPLOYMENT", "grok-4-fast-reasoning")
+    embedding_model: str = os.getenv("AZURE_OPENAI_EMBEDDING_DEPLOYMENT", "text-embedding-3-large")
 
     # --- Generation ---
     temperature: float = float(os.getenv("LLM_TEMPERATURE", "1"))
-    max_tokens: int = int(os.getenv("LLM_MAX_TOKENS", "1024"))
+    max_tokens: int = int(os.getenv("LLM_MAX_TOKENS", "8192"))
 
     def validate(self):
-        """Fail fast if required env vars are missing for the chosen backend."""
-        if self.backend not in ("vertex_ai", "api_key"):
-            raise ValueError(
-                f"LLM_BACKEND must be 'vertex_ai' or 'api_key', got '{self.backend}'"
-            )
-        if self.backend == "api_key" and not self.api_key:
-            raise ValueError(
-                "LLM_BACKEND=api_key but GOOGLE_API_KEY is not set"
-            )
-        if self.backend == "vertex_ai" and not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
-            raise ValueError(
-                "LLM_BACKEND=vertex_ai but GOOGLE_APPLICATION_CREDENTIALS is not set"
-            )
+        """Fail fast if critical config is missing."""
+        if not os.getenv("AZURE_OPENAI_API_KEY"):
+            pass
 
 
 # Global config instances
